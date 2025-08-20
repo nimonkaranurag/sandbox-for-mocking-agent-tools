@@ -1,0 +1,18 @@
+{
+  "args": {
+    "text": "hello world"
+  },
+  "id": "686d8aacf9061e99",
+  "response": {
+    "data": {
+      "echo": "hello world",
+      "length": 11
+    },
+    "error": null,
+    "latency_ms": 33,
+    "ok": true,
+    "tool_version": "v1"
+  },
+  "time": 1755697465.763535,
+  "tool": "echo"
+}

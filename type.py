@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import dataclasses as dc
-from typing import Optional, Dict, List, Tuple, Any, Callable
+from typing import Optional, Dict, List, Tuple, Any, Callable, Union
 from pathlib import Path
 import json
 import random
@@ -81,7 +81,7 @@ class Recording:
                     "id": self.tool_id,
                     "tool": self.tool_name,
                     "args": self.args,
-                    "response": self.response,
+                    "response": self.response.to_json(),
                     "time": self.timestamp,
                 },
                 output_file,
@@ -161,6 +161,59 @@ class FaultProfile:
 
         return r.random() < self.error_rate
 
+class Recorder:
+    def __init__(
+            self,
+            output_dir: Union[str, Path] = "recordings",      
+    ):
+        self.output_dir = safe_mkdir(output_dir)
+    
+    def record(
+            self,
+            invocation: ToolCall,
+            response: MockedResponse,
+    ) -> Path:
+        
+        recording = Recording(
+            tool_id=invocation.tool_id,
+            tool_name=invocation.tool_name,
+            args=invocation.args,
+            response=response,
+            timestamp=invocation.timestamp
+        )
+
+        return recording.save(self.output_dir)
+
+class ToolsRegistry:
+    def __init__(self) -> None:
+        self._tools: Dict[str, Tool] = {}
+    
+    def register(
+          self,
+          tool: Tool,  
+    ) -> None:
+        
+        if tool.name in self._tools:
+            raise ValueError(
+                f"Tool already registered."
+                )
+        
+        self._tools[tool.name] = tool
+    
+    def get(
+            self,
+            tool_name: str
+    ) -> Tool:
+        
+        if tool_name not in self._tools:
+            raise KeyError(
+                f"Tool not found: {tool_name}"
+            )
+        
+        return self._tools[tool_name]
+    
+    def list(self) -> List[str]:
+        return sorted(self._tools.keys())
 
 
 

@@ -3,14 +3,14 @@ from typing import Dict, Any
 import dataclasses as dc
 
 from utils import (
-    ToolsRegistry,
-    Recorder,
     pretty,
     )
 from type import (
     Tool,
     Policy,
     FaultProfile,
+    ToolsRegistry,
+    Recorder,
     )
 from sandbox import Sandbox
 from adapter import Adapter
@@ -45,7 +45,7 @@ def build_sample_registry() -> ToolsRegistry:
         Tool(
             name="echo",
             description="Return the same text with metadata.",
-            parameters_schema={"type": "object", "properties": {"text": {"type": "string"}}, "required": ["text"]},
+            param_schema={"type": "object", "properties": {"text": {"type": "string"}}, "required": ["text"]},
             handler=echo_handler,
             version="v1",
         )
@@ -55,7 +55,7 @@ def build_sample_registry() -> ToolsRegistry:
         Tool(
             name="sum",
             description="Sum a list of numbers.",
-            parameters_schema={
+            param_schema={
                 "type": "object",
                 "properties": {"numbers": {"type": "array", "items": {"type": "number"}}},
                 "required": ["numbers"],

@@ -1,0 +1,23 @@
+{
+  "args": {
+    "numbers": [
+      1,
+      2,
+      3,
+      4.5
+    ]
+  },
+  "id": "806986e422515215",
+  "response": {
+    "data": {
+      "count": 4,
+      "sum": 10.5
+    },
+    "error": null,
+    "latency_ms": 74,
+    "ok": true,
+    "tool_version": "v1"
+  },
+  "time": 1755697465.842984,
+  "tool": "sum"
+}

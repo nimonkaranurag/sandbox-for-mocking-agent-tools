@@ -7,11 +7,11 @@ from type import (
     Policy,
     ToolCall,
     MockedResponse,
-    FaultProfile
-    )
-from utils import (
+    FaultProfile,
     Recorder,
     ToolsRegistry,
+    )
+from utils import (
     stable_hash
     )
 
