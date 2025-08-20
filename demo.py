@@ -4,13 +4,16 @@ import dataclasses as dc
 
 from utils import (
     ToolsRegistry,
+    Recorder,
     pretty,
     )
 from type import (
     Tool,
+    Policy,
     FaultProfile,
     )
 from sandbox import Sandbox
+from adapter import Adapter
 
 def echo_handler(args: Dict[str, Any]) -> Dict[str, Any]:
     text = args.get("text", "")
@@ -65,26 +68,29 @@ def build_sample_registry() -> ToolsRegistry:
 
 
 def demo() -> None:
+    # Minimal policy — allow everything
+    policy = Policy(allowed_tools=None, unallowed_tools=None)
 
-    sb = Sandbox(
-        build_sample_registry(), 
-        FaultProfile(
-            seed=42,
-            min_latency_ms=20,
-            max_latency_ms=120,
-            error_rate=0.0
-        )
-        )
-    
+    # Recorder to show record capability (writes ./recordings/<id>.json)
+    recorder = Recorder(output_dir="recordings")
+
+    # Deterministic latency; set error_rate=0.2 to see injected failures
+    fault = FaultProfile(seed=42, min_latency_ms=20, max_latency_ms=120, error_rate=0.0)
+
+    sb = Sandbox(policy=policy, recorder=recorder, registry=build_sample_registry(), fault=fault)
+
     print("== Tools:", sb.registry.list())
 
     print("\n-- echo --")
-    r1 = sb.invoke("echo", {"text": "hello world"})
+    inv1, r1 = sb.invoke("echo", {"text": "hello world"}, record=True)
     print(pretty(dc.asdict(r1)))
 
     print("\n-- sum --")
-    r2 = sb.invoke("sum", {"numbers": [1, 2, 3, 4.5]})
+    inv2, r2 = sb.invoke("sum", {"numbers": [1, 2, 3, 4.5]}, record=True)
     print(pretty(dc.asdict(r2)))
+
+    # Sanity Check
+    print(pretty(Adapter(sb).describe_tools()))
 
 if __name__ == "__main__":
     demo()
