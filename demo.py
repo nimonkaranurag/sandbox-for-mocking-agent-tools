@@ -1,5 +1,3 @@
-# demo_sandbox.py
-
 from pathlib import Path
 import json
 import shutil
