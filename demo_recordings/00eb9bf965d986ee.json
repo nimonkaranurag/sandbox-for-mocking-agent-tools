@@ -1,0 +1,15 @@
+{
+  "args": {
+    "page": 2,
+    "repo": "octo/demo"
+  },
+  "id": "00eb9bf965d986ee",
+  "response": {
+    "data": null,
+    "error": "Injected failure (simulated).",
+    "latency_ms": 118,
+    "ok": false
+  },
+  "time": "1755783319.210529",
+  "tool": "mock.issues.list"
+}
