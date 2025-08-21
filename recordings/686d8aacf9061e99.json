@@ -9,10 +9,10 @@
       "length": 11
     },
     "error": null,
-    "latency_ms": 33,
+    "latency_ms": 118,
     "ok": true,
     "tool_version": "v1"
   },
-  "time": 1755697465.763535,
+  "time": 1755773523.6737962,
   "tool": "echo"
 }

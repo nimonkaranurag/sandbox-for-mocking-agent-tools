@@ -5,6 +5,7 @@ from typing import Optional, Dict, List, Tuple, Any, Callable, Union
 from pathlib import Path
 import json
 import random
+import hashlib
 
 from utils import safe_mkdir
 
@@ -21,7 +22,6 @@ class MockedResponse:
     data: Optional[Dict[str, Any]] = None
     error: Optional[str] = None
     latency_ms: int = 0
-    tool_version: str = "v1"
 
     def to_json(self) -> Dict[str, Any]:
         return dc.asdict(self)
@@ -64,7 +64,7 @@ class Recording:
     tool_name: str
     args: Dict[str, Any]
     response: MockedResponse
-    timestamp: float
+    timestamp: Union[float, str]
 
     def save(
             self,
@@ -109,25 +109,7 @@ class Recording:
             response=response,
             timestamp=payload["time"]
         )
-
-
-ToolHandler = Callable[[Dict[str, Any]], Dict[str, Any]]
-@dc.dataclass
-class Tool:
-    name: str
-    description: str
-    param_schema: Dict[str, Any]
-    handler: ToolHandler
-    version: str = "v1"
-
-    def invoke(
-            self,
-            args: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        
-        #TODO: Add JSON Schema Validation
-        return self.handler(args)
-
+    
 @dc.dataclass
 class FaultProfile:
     """
@@ -139,10 +121,17 @@ class FaultProfile:
     error_rate: float = 0.0 # set to 0.2 to see ~20% failures, etc.
 
     def rng(self, key: str) -> random.Random:
+       
         # Ensure determinism per (seed, key)
-        return random.Random(
-            hash((self.seed, key)) & 0xFFFFFFFF
+        h = hashlib.sha256(
+        f"{self.seed}:{key}".encode("utf-8")
+        ).digest()
+
+        seed_int = int.from_bytes(
+            h[:8], "big", signed=False
             )
+        
+        return random.Random(seed_int)
     
     def sample_latency(self, key: str) -> int:
         r = self.rng(key)
@@ -160,60 +149,59 @@ class FaultProfile:
         r = self.rng(key)
 
         return r.random() < self.error_rate
-
-class Recorder:
-    def __init__(
-            self,
-            output_dir: Union[str, Path] = "recordings",      
-    ):
-        self.output_dir = safe_mkdir(output_dir)
     
-    def record(
-            self,
-            invocation: ToolCall,
-            response: MockedResponse,
-    ) -> Path:
-        
-        recording = Recording(
-            tool_id=invocation.tool_id,
-            tool_name=invocation.tool_name,
-            args=invocation.args,
-            response=response,
-            timestamp=invocation.timestamp
+@dc.dataclass
+class FixtureMetaData:
+    created_at: str
+    signature: str
+    seed: Optional[str] = None
+    profile: Optional[str] = None
+    policy_hash: Optional[str] = None
+    notes: Optional[str] = None
+
+@dc.dataclass
+class Fixture:
+    ok: bool
+    data: Optional[Dict[str, Any]] = None
+    error: Optional[str] = None
+    latency_ms: int = 0
+    metadata: Optional[FixtureMetaData] = None
+
+    def to_json(self) -> Dict[str, Any]:
+        payload = {
+            "ok": self.ok,
+            "data": self.data,
+            "error": self.error,
+            "latency_ms": self.latency_ms,
+            "metadata": dc.asdict(self.metadata) if self.metadata else None
+        }
+        return payload
+    
+    @staticmethod
+    def load_from_json(
+        fixture: Dict[str, Any],
+        ) -> "Fixture":
+
+        metadata = fixture.get("metadata")
+        meta_obj = FixtureMetaData(**metadata) if metadata else None
+
+        return Fixture(
+            ok=fixture.get("ok"),
+            data=fixture.get("data"),
+            error=fixture.get("error"),
+            latency_ms=fixture.get("latency_ms", 0),
+            metadata=meta_obj,
         )
 
-        return recording.save(self.output_dir)
+@dc.dataclass
+class Operation:
+    name: str
+    param_schema: Dict[str, Any]
+    result_schema: Dict[str, Any]
+    description: str = ""
+    version: str = "v1"
 
-class ToolsRegistry:
-    def __init__(self) -> None:
-        self._tools: Dict[str, Tool] = {}
-    
-    def register(
-          self,
-          tool: Tool,  
-    ) -> None:
-        
-        if tool.name in self._tools:
-            raise ValueError(
-                f"Tool already registered."
-                )
-        
-        self._tools[tool.name] = tool
-    
-    def get(
-            self,
-            tool_name: str
-    ) -> Tool:
-        
-        if tool_name not in self._tools:
-            raise KeyError(
-                f"Tool not found: {tool_name}"
-            )
-        
-        return self._tools[tool_name]
-    
-    def list(self) -> List[str]:
-        return sorted(self._tools.keys())
+
 
 
 

@@ -9,7 +9,9 @@ def safe_mkdir(
         path: Union[str, Path]
 ) -> Path:
     
-    path = Path(path) if path is not None else Path("recordings")
+    if isinstance(path, str):
+        path = Path(path)
+
     path.mkdir(
         parents=True,
         exist_ok=True
@@ -29,13 +31,5 @@ def stable_hash(*parts: Any) -> str:
     return hashlib.sha256(
         payload.encode("utf-8")
         ).hexdigest()[:16]
-
-def pretty(obj: Any) -> str:
-    return json.dumps(
-        obj, 
-        indent=2, 
-        sort_keys=True, 
-        ensure_ascii=False
-        )
         
         

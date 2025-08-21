@@ -19,16 +19,18 @@ class Adapter:
 
     def describe_tools(self) -> List[Dict[str, Any]]:
 
-        registry = self.sandbox.registry
-        out = []
-        for tool_name in registry.list():
-            tool = registry.get(tool_name)
-            out.append({
-                "name": tool.name,
-                "description": tool.description,
-                "input_schema": tool.param_schema,
-                "version": tool.version,
-            }
+        out: List[Dict[str, Any]] = []
+        for name in self.sandbox.api_ops_router.list_ops():
+
+            op = self.sandbox.api_ops_router.get_op(name)
+            out.append(
+                {
+                    "name": op.name,
+                    "description": getattr(op, "description", ""),
+                    "input_schema": op.param_schema,
+                    "result_schema": op.result_schema,
+                    "version": getattr(op, "version", "v1"),
+                }
             )
-        
+            
         return out
