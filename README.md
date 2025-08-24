@@ -10,6 +10,7 @@ nimonkaranurag@gmail.com
 
 ```bash
 conda create -n your_env python=3.12
+conda activate your_env
 pip install -r requirements.txt
 python demo.py --spec=example_specs/simple_spec.yaml
 ```
