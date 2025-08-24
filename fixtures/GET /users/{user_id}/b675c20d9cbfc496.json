@@ -1,0 +1,19 @@
+{
+  "data": {
+    "created_at": "2025-01-01T00:00:00Z",
+    "email": "user4257@example.com",
+    "id": 575,
+    "name": "hosizay"
+  },
+  "error": null,
+  "latency_ms": 123,
+  "metadata": {
+    "created_at": "1756037178.511585",
+    "notes": null,
+    "policy_hash": null,
+    "profile": null,
+    "seed": "42",
+    "signature": "b675c20d9cbfc496"
+  },
+  "ok": true
+}

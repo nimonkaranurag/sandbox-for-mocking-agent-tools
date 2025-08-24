@@ -7,7 +7,11 @@ import json
 import random
 import hashlib
 
-from utils import safe_mkdir
+from utils import (
+    safe_mkdir,
+)
+
+JSON = Dict[str, Any]
 
 @dc.dataclass
 class ToolCall:
@@ -200,6 +204,45 @@ class Operation:
     result_schema: Dict[str, Any]
     description: str = ""
     version: str = "v1"
+
+@dc.dataclass
+class FixtureBundle:
+    services: JSON
+    profiles: JSON
+    metadata: JSON
+
+    def to_json(self) -> str:
+        return json.dumps(
+            {
+                "services": self.services, 
+                "profiles": self.profiles, 
+                "metadata": self.metadata
+            },
+            indent=2,
+            ensure_ascii=False,
+        )
+
+@dc.dataclass
+class OpenAPINormalized:
+    raw: JSON
+    components: JSON = dc.field(default_factory=dict)
+    paths: JSON = dc.field(default_factory=dict)
+    schemas: JSON = dc.field(default_factory=dict)
+
+    @classmethod
+    def from_dict(
+        cls,
+        spec: JSON
+    ) -> "OpenAPINormalized":
+        
+        components = spec.get("components", {})
+
+        return cls(
+            raw=spec,
+            components=components,
+            paths=spec.get("paths", {}),
+            schemas=components.get("schemas", {})
+        )
 
 
 

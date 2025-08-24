@@ -1,0 +1,14 @@
+{
+  "args": {},
+  "id": "3cce8465cfa74ec8",
+  "response": {
+    "data": {
+      "status": "ok"
+    },
+    "error": null,
+    "latency_ms": 46,
+    "ok": true
+  },
+  "time": "1756037178.458789",
+  "tool": "GET /health"
+}

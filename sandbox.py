@@ -17,7 +17,7 @@ from utils import (
 from recorder import Recorder
 from fixtures import FixtureStore
 from api_ops_router import APIOperationsRouter
-from generator import DataGenerator
+from data_generator import DataGenerator
 
 class Sandbox:
     def __init__(

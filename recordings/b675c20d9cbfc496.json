@@ -1,0 +1,19 @@
+{
+  "args": {
+    "user_id": 123
+  },
+  "id": "b675c20d9cbfc496",
+  "response": {
+    "data": {
+      "created_at": "2025-01-01T00:00:00Z",
+      "email": "user4257@example.com",
+      "id": 575,
+      "name": "hosizay"
+    },
+    "error": null,
+    "latency_ms": 123,
+    "ok": true
+  },
+  "time": "1756037178.646358",
+  "tool": "GET /users/{user_id}"
+}

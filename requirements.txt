@@ -1,0 +1,7 @@
+markdown-it-py==4.0.0
+mdurl==0.1.2
+Pygments==2.19.2
+PyYAML==6.0.2
+rich==14.1.0
+setuptools==78.1.1
+wheel==0.45.1

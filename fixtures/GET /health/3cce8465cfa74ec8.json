@@ -1,0 +1,16 @@
+{
+  "data": {
+    "status": "ok"
+  },
+  "error": null,
+  "latency_ms": 46,
+  "metadata": {
+    "created_at": "1756037178.405046",
+    "notes": null,
+    "policy_hash": null,
+    "profile": null,
+    "seed": "42",
+    "signature": "3cce8465cfa74ec8"
+  },
+  "ok": true
+}
